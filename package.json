@@ -1,0 +1,21 @@
+{
+    "name": "pong",
+    "version": "1.0.0",
+    "author": "Scott Moore",
+    "license": "MIT",
+    "scripts": {
+        "serve": "http-server -s",
+        "build": "browserify src/index.ts -p tsify -o public/js/main.js",
+        "watch": "watchify -v -d src/index.ts -p tsify -o public/js/main.js",
+        "clean": "rm -f public/js/main.js",
+        "start": "npm-run-all -p watch serve"
+    },
+    "devDependencies": {
+        "browserify": "^14.4.0",
+        "http-server": "^0.10.0",
+        "npm-run-all": "^4.0.2",
+        "tsify": "^3.0.1",
+        "typescript": "^2.4.2",
+        "watchify": "^3.9.0"
+    }
+}
