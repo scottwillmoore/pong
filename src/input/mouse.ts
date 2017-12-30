@@ -3,8 +3,14 @@
 // TODO: write tests
 // NOTE: should getDuration be replaced with getPressDuration, getReleaseDuration...
 
-class Mouse {
-    public readonly button = Button;
+export default class Mouse {
+    public readonly button = new class Button {
+        public readonly LEFT = 0;
+        public readonly MIDDLE = 1;
+        public readonly RIGHT = 2;
+        public readonly BACK = 3;
+        public readonly FORWARD = 4;
+    }
 
     private element: Element;
 
