@@ -1,18 +1,19 @@
-// NOTE: two alternative Key implementations below...
-// TODO: implement way to track key durations...
+// TODO: polyfill KeyboardEvent.code
+// TODO: implement event system
+// TODO: write tests
+// NOTE: should getDuration be replaced with getPressDuration, getReleaseDuration...
 
-class Key {
-    public readonly A = "KeyA";
-    public readonly D = "KeyD";
-    public readonly S = "KeyS";
-    public readonly W = "KeyW";
-    public readonly NUM_1 = "Digit1";
-    public readonly ARROW_UP = "ArrowUp";
-    // TODO: 
+enum Key {
+    A = "KeyA",
+    D = "KeyD",
+    S = "KeyS",
+    W = "KeyW",
+    NUM_1 = "Digit1",
+    ARROW_UP = "ArrowUp",
 }
 
 class Keyboard {
-    public readonly Key: Key = new Key();
+    public readonly key = Key;
 
     private element: Element;
 
@@ -27,7 +28,7 @@ class Keyboard {
     private preventDefault: boolean;
     private stopPropagation: boolean;
 
-    constructor (element: Element) {
+    public constructor (element: Element) {
         this.element = null;
 
         this.keyDownHandler = this.handleKeyDown.bind(this);
@@ -71,20 +72,30 @@ class Keyboard {
         }
     }
 
-    public isPressed (key: number): boolean {
+    public isPressed (key: string): boolean {
         return !!this.keys[key];
     }
 
-    public wasPressed (key: number): boolean {
+    public wasPressed (key: string): boolean {
         return !!this.keys[key] && !!!this.lastKeys[key];
     }
 
-    public wasReleased (key: number): boolean {
+    public wasReleased (key: string): boolean {
         return !!!this.keys[key] && !!this.lastKeys[key];
+    }
+
+    public getDuration (key: string): number {
+        if (this.keyDurations[key]) {
+            return this.keyDurations[key];
+        }
+        return 0;
     }
 
     private handleKeyDown (event: KeyboardEvent): void {
         this.keys[event.code] = true;
+        if (!event.repeat) {
+            this.keyDurations[event.code] = performance.now();
+        }
 
         if (this.preventDefault) {
             event.preventDefault();
@@ -96,6 +107,9 @@ class Keyboard {
 
     private handleKeyUp (event: KeyboardEvent): void {
         this.keys[event.code] = undefined;
+        if (!event.repeat) {
+            this.keyDurations[event.code] = performance.now();
+        }
 
         if (this.preventDefault) {
             event.preventDefault();
@@ -106,7 +120,7 @@ class Keyboard {
     }
 
     private handleKeyPress (event: KeyboardEvent): void {
-        // TODO: not used!
+        // TODO
 
         if (this.preventDefault) {
             event.preventDefault();
@@ -116,11 +130,3 @@ class Keyboard {
         }
     }
 }
-
-module Keyboard {
-    export enum Key {
-        A = "KeyA",
-    }
-}
-
-export default Keyboard;
