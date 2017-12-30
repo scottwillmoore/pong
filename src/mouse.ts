@@ -3,14 +3,6 @@
 // TODO: write tests
 // NOTE: should getDuration be replaced with getPressDuration, getReleaseDuration...
 
-enum Button {
-    LEFT = 0,
-    MIDDLE = 1,
-    RIGHT = 2,
-    BACK = 3,
-    FORWARD = 4,
-}
-
 class Mouse {
     public readonly button = Button;
 

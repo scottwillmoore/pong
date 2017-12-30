@@ -3,15 +3,6 @@
 // TODO: write tests
 // NOTE: should getDuration be replaced with getPressDuration, getReleaseDuration...
 
-enum Key {
-    A = "KeyA",
-    D = "KeyD",
-    S = "KeyS",
-    W = "KeyW",
-    NUM_1 = "Digit1",
-    ARROW_UP = "ArrowUp",
-}
-
 class Keyboard {
     public readonly key = Key;
 
