@@ -1,89 +1,71 @@
-import { Ball } from "./ball";
-import { Vector2 } from "./math";
-import { Keyboard, Key } from "./input";
+import Application from "./core/application";
+import Vec2 from "./math/vec2";
 
-export class Pong {
-    protected step: number;
-    protected previous: number;
-    protected accumulator: number;
+export default class Pong extends Application {
+    private context: CanvasRenderingContext2D;
 
-    protected canvas: HTMLCanvasElement;
-    protected context: CanvasRenderingContext2D;
+    private ballSpeed: number;
+    private ballRadius: number;
+    private previousBallPosition: Vec2;
+    private ballPosition: Vec2;
+    private ballVelocity: Vec2;
 
-    protected ball: Ball;
+    constructor (canvas: HTMLCanvasElement) {
+        super (canvas);
 
-    constructor () {
-        this.step = 1/20;
-        this.previous = performance.now();
-        this.accumulator = 0;
-
-        this.canvas = document.getElementsByTagName("canvas")[0];
         this.canvas.width = innerWidth;
         this.canvas.height = innerHeight;
+
         let context = this.canvas.getContext("2d");
         if (!context) {
             throw new Error("unable to create canvas context");
         }
         this.context = context;
 
-        this.ball = new Ball();
-        this.ball.pos = new Vector2(innerWidth / 2, innerHeight / 2);
-
-        addEventListener("resize", this.resize.bind(this));
-        requestAnimationFrame(this.tick.bind(this));
+        this.ballSpeed = 80;
+        this.ballRadius = 10;
+        this.ballPosition = new Vec2(innerWidth / 2, innerHeight / 2);
+        this.previousBallPosition = this.ballPosition.copy();
+        this.ballVelocity = new Vec2();
     }
 
-    tick (now: number): void {
-        let dt = (now - this.previous) / 1000;
-        this.accumulator += dt;
-        this.previous = now;
+    protected update (delta: number): void {
+        super.update(delta);
 
-        while (this.accumulator > this.step) {
-            this.accumulator -= this.step;
-            this.update(this.step);
+        let newBallVelocity = new Vec2();
+        if (this.keyboard.isPressed(this.keyboard.key.W)) {
+            newBallVelocity.add(new Vec2(0, -this.ballSpeed));
         }
+        if (this.keyboard.isPressed(this.keyboard.key.S)) {
+            newBallVelocity.add(new Vec2(0, this.ballSpeed));
+        }
+        if (this.keyboard.isPressed(this.keyboard.key.A)) {
+            newBallVelocity.add(new Vec2(-this.ballSpeed, 0));
+        }
+        if (this.keyboard.isPressed(this.keyboard.key.D)) {
+            newBallVelocity.add(new Vec2(this.ballSpeed, 0));
+        }
+        this.ballVelocity = newBallVelocity;
 
-        let alpha = this.accumulator / this.step;
-        this.render(alpha);
-
-        requestAnimationFrame(this.tick.bind(this));
+        this.previousBallPosition = this.ballPosition.copy();
+        this.ballPosition
+            .add(this.ballVelocity
+                    .copy()
+                    .scale(delta));
     }
 
-    resize (): void {
-        this.canvas.width = innerWidth;
-        this.canvas.height = innerHeight;
-    }
-
-    update (delta: number): void {
-        let speed = 50*delta;
-        let vel = new Vector2();
-        if (Keyboard.isPressed(Key.W)) vel.addv(new Vector2(0, -speed));
-        if (Keyboard.isPressed(Key.S)) vel.addv(new Vector2(0, speed));
-        // if (this.keyboard.isPressed(Key.A)) vel.addv(new Vector2(-speed, 0));
-        // if (this.keyboard.isPressed(Key.D)) vel.addv(new Vector2(speed, 0));
-        this.ball.vel = vel;
-
-        // console.log({
-        //     up: this.keyboard.isPressed(Key.UP),
-        //     down: this.keyboard.isPressed(Key.DOWN),
-        //     left: this.keyboard.isPressed(Key.LEFT),
-        //     right: this.keyboard.isPressed(Key.RIGHT)
-        // });
-
-        this.ball.update(delta);
-    }
-
-    render (alpha: number): void {
+    protected render (alpha: number): void {
         // TODO: webgl renderer
         // TODO: interpolation
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        let radius = 10;
+        let interpolatedPosition = this.previousBallPosition.copy()
+            .lerp(this.ballPosition, alpha);
+
         this.context.fillRect(
-            this.ball.pos.x - radius,
-            this.ball.pos.y - radius,
-            2*radius,
-            2*radius
-        );
+            interpolatedPosition.x - this.ballRadius,
+            interpolatedPosition.y - this.ballRadius,
+            2*this.ballRadius,
+            2*this.ballRadius);
     }
 }

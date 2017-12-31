@@ -1,3 +1,4 @@
-import { Pong } from "./pong";
+import Pong from "./pong";
 
-new Pong();
+let canvas = document.getElementsByTagName("canvas")[0];
+let pong = new Pong(canvas);
