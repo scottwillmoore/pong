@@ -2,6 +2,7 @@
 // TODO: implement event system
 // TODO: write tests
 // NOTE: should getDuration be replaced with getPressDuration, getReleaseDuration...
+// TODO: remove union types containing null or undefined
 
 export default class Keyboard {
     public readonly key = new class Key {
@@ -106,14 +107,14 @@ export default class Keyboard {
         public readonly Z = "KeyZ";
     }
 
-    private element: Element;
+    private element: Element | null;
 
     private keyDownHandler: EventListener;
     private keyUpHandler: EventListener;
     private keyPressHandler: EventListener;
 
-    private keys: { [key: string]: boolean; };
-    private lastKeys: { [key: string]: boolean; };
+    private keys: { [key: string]: boolean | undefined; };
+    private lastKeys: { [key: string]: boolean | undefined; };
     private keyDurations: { [key: string]: number; };
 
     private preventDefault: boolean;
@@ -123,7 +124,7 @@ export default class Keyboard {
         this.element = null;
 
         this.keyDownHandler = this.handleKeyDown.bind(this);
-        this.keyUpHandler = this.handleKeyDown.bind(this);
+        this.keyUpHandler = this.handleKeyUp.bind(this);
         this.keyPressHandler = this.handleKeyPress.bind(this);
 
         this.keys = {};
@@ -147,6 +148,9 @@ export default class Keyboard {
     }
 
     public detatch (): void {
+        if (!this.element) {
+            return;
+        }
         this.element.removeEventListener("keydown", this.keyDownHandler);
         this.element.removeEventListener("keyup", this.keyUpHandler);
         this.element.removeEventListener("keypress", this.keyPressHandler);

@@ -2,6 +2,7 @@
 // TODO: implement event system
 // TODO: write tests
 // NOTE: should getDuration be replaced with getPressDuration, getReleaseDuration...
+// TODO: remove union types containing null or undefined
 
 export default class Mouse {
     public readonly button = new class Button {
@@ -12,7 +13,7 @@ export default class Mouse {
         public readonly FORWARD = 4;
     }
 
-    private element: Element;
+    private element: Element | null;
 
     private mouseDownHandler: EventListener;
     private mouseUpHandler: EventListener;
@@ -20,8 +21,8 @@ export default class Mouse {
     private mouseWheelHandler: EventListener;
     private contextMenuHandler: EventListener;
 
-    private buttons: { [key: number]: boolean; };
-    private lastButtons: { [key: number]: boolean; };
+    private buttons: { [key: number]: boolean | undefined; };
+    private lastButtons: { [key: number]: boolean | undefined; };
     private buttonDurations: { [key: number]: number; };
 
     private contextMenu: boolean;
@@ -31,8 +32,6 @@ export default class Mouse {
     private stopPropagation: boolean;
 
     public constructor (element: Element) {
-        this.element = null;
-
         this.mouseDownHandler = this.handleMouseDown.bind(this);
         this.mouseUpHandler = this.handleMouseUp.bind(this);
         this.mouseMoveHandler = this.handleMouseMove.bind(this);
@@ -65,6 +64,9 @@ export default class Mouse {
     }
 
     public detatch (): void {
+        if (!this.element) {
+            return;
+        }
         this.element.removeEventListener("mousedown", this.mouseDownHandler);
         this.element.removeEventListener("mouseup", this.mouseUpHandler);
         this.element.removeEventListener("mousemove", this.mouseMoveHandler);
@@ -89,7 +91,8 @@ export default class Mouse {
 
     public setPointerLock (state: boolean): void {
         if (state) {
-            this.element.requestPointerLock();
+            // TODO: fix
+            // this.element.requestPointerLock();
         } else {
             if (document.pointerLockElement) {
                 document.exitPointerLock();
