@@ -1,7 +1,7 @@
 import Keyboard from "../input/keyboard";
 import Mouse from "../input/mouse";
 
-export default class Application {
+export default abstract class Application {
     protected canvas: HTMLCanvasElement;
 
     protected keyboard: Keyboard;
@@ -32,13 +32,11 @@ export default class Application {
         requestAnimationFrame(this.tickHandler);
     }
 
-    protected update (delta: number): void {
-        this.keyboard.update(delta);
-        this.mouse.update(delta);
-    }
+    protected abstract update (delta: number): void;
 
-    protected render (alpha: number): void {
-    }
+    protected abstract render (alpha: number): void;
+
+    protected abstract resize (width: number, height: number): void;
 
     private handleTick (timestamp: number): void {
         let delta = (timestamp - this.previousTimestamp) / 1000;
@@ -47,6 +45,10 @@ export default class Application {
 
         while (this.timestampAccumulator > this.fixedUpdateStep) {
             this.timestampAccumulator -= this.fixedUpdateStep;
+
+            this.keyboard.update(delta);
+            this.mouse.update(delta);
+
             this.update(this.fixedUpdateStep);
         }
 

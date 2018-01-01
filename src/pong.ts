@@ -30,8 +30,6 @@ export default class Pong extends Application {
     }
 
     protected update (delta: number): void {
-        super.update(delta);
-
         let newBallVelocity = new Vec2();
         if (this.keyboard.isPressed(this.keyboard.key.W)) {
             newBallVelocity.add(new Vec2(0, -this.ballSpeed));
@@ -67,5 +65,8 @@ export default class Pong extends Application {
             interpolatedPosition.y - this.ballRadius,
             2*this.ballRadius,
             2*this.ballRadius);
+    }
+
+    protected resize (width: number, height: number): void {
     }
 }
