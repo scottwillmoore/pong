@@ -1,5 +1,5 @@
-import Application from "./core/application";
-import Vec2 from "./math/vec2";
+import Application from "./application";
+import Vec2 from "./vec2";
 
 export default class Pong extends Application {
     private context: CanvasRenderingContext2D;

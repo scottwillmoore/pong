@@ -1,5 +1,5 @@
-import Keyboard from "../input/keyboard";
-import Mouse from "../input/mouse";
+import Keyboard from "./keyboard";
+import Mouse from "./mouse";
 
 export default abstract class Application {
     protected canvas: HTMLCanvasElement;

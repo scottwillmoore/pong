@@ -1,4 +1,4 @@
-import Vec2 from "./Vec2";
+import Vec2 from "./vec2";
 
 export default class Vec3 {
     public static readonly X = new Vec3(1, 0, 0);
